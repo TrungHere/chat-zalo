@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+
+    <title>Dashboard</title>
+
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
+    <meta name="viewport" content="width=device-width" />
+
+
+    <!-- Bootstrap core CSS     -->
+    <link href="https://adfuture.vn/assets/admin/css/bootstrap.min.css" rel="stylesheet" />
+
+    <!-- Animation library for notifications   -->
+    <link href="https://adfuture.vn/assets/admin/css/animate.min.css" rel="stylesheet" />
+
+    <!--  Light Bootstrap Table core CSS    -->
+    <link href="https://adfuture.vn/assets/admin/css/light-bootstrap-dashboard.css?v=1.4.0" rel="stylesheet" />
+
+
+    <!--  CSS for Demo Purpose, don't include it in your project     -->
+    <link href="https://adfuture.vn/assets/admin/css/demo.css" rel="stylesheet" />
+
+
+    <!--     Fonts and icons     -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.3.0/css/all.min.css" rel="stylesheet">
+    <link href='http://fonts.googleapis.com/css?family=Roboto:400,700,300' rel='stylesheet' type='text/css'>
+    <link href="https://adfuture.vn/assets/admin/css/pe-icon-7-stroke.css" rel="stylesheet" />
+
+</head>
+
+<body>
+    <div class="wrapper">
+       
+        <div class="main-panel">
+           
+            <div>
+                <div class="form-group">
+                  <label for="exampleInputEmail1">Email address</label>
+                  <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" placeholder="Enter email">
+                  <small id="emailHelp" class="form-text text-muted">We'll never share your email with anyone else.</small>
+                </div>
+                <div class="content">
+                    <div class="container-fluid">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card">
+                                    <div class="content table-responsive table-full-width">
+                                        <table class="table table-hover table-striped">
+                                            <thead>
+                                                <th>STT</th>
+                                                <th>IdDevice</th>
+                                                <th>Name</th>
+                                                <th>Time</th>
+                                            </thead>
+                                            <tbody id="data_table_root">
+                                                
+                                            </tbody>
+                                        </table>
+        
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <button onclick="TakeHistory()" class="btn btn-primary">Submit</button>
+            </div>
+    
+          
+        </div>
+       
+    </div>
+</body>
+
+<!--   Core JS Files   -->
+<script src="https://adfuture.vn/assets/admin/js/jquery.3.2.1.min.js" type="text/javascript"></script>
+<script src="https://adfuture.vn/assets/admin/js/bootstrap.min.js" type="text/javascript"></script>
+
+    <!--  Notifications Plugin    -->
+    <script src="https://adfuture.vn/assets/admin/js/bootstrap-notify.js"></script>
+
+<!--  Google Maps Plugin    -->
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=YOUR_KEY_HERE"></script>
+
+<!--  Charts Plugin -->
+<script src="https://adfuture.vn/assets/admin/js/chartist.min.js"></script>
+
+<!-- Light Bootstrap Table Core javascript and methods for Demo purpose -->
+<script src="https://adfuture.vn/assets/admin/js/light-bootstrap-dashboard.js?v=1.4.0"></script>
+
+<!-- Light Bootstrap Table DEMO methods, don't include it in your project! -->
+<script src="https://adfuture.vn/assets/admin/js/demo.js"></script>
+
+</html>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script> 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.3.4/axios.min.js"></script> 
+
+<style>
+    .main-panel{
+       float:none;
+       margin-left:100px;
+    }
+</style>
+<script>
+    let listHistory = []
+    const TakeHistory = async ()=>{
+        listHistory = [];
+        $('#data_table_root').html('')
+        let res = await axios({
+                  method: "post",
+                  url: "/api/users/GetHistoryAccessByMail",
+                  data: {
+                    Email:$("#exampleInputEmail1").val()
+                  },
+                  headers: { "Content-Type": "multipart/form-data" }
+        }); 
+        console.log(res.data);
+        for(let i=0; i<res.data.data.users.length; i++){
+             let user = res.data.data.users[i];
+             console.log(user.HistoryAccess);
+             for(let j=0; j<user.HistoryAccess.length; j++){
+                listHistory.push(user.HistoryAccess[j])
+             }
+             console.log(listHistory);
+        };
+        console.log(listHistory)
+        for(let i=0; i<listHistory.length; i++){
+            $('#data_table_root').append(`
+            <tr id="${listHistory[i].IdDevice}">
+                <td class="td_product">
+                    <input type="text" 
+                            value="${i+1}" 
+                            class="btn btn-primary"/>
+                </td>
+                <td class="td_product">
+                    <input 
+                            value="${listHistory[i].IdDevice}" class="btn btn-primary"/>
+                </td>
+                <td class="td_product">
+                    <input 
+                            value="${listHistory[i].NameDevice}" class="btn btn-primary"/>
+                </td>
+                <td class="td_product">
+                    <input 
+                            value="${listHistory[i].Time}" class="btn btn-primary"/>
+                </td>
+            </tr>
+            `);
+        }
+    }
+    // const TakeData = async () =>{
+    //     let res = await axios.get(`/TakeData/SendMail/Department`);
+    //     let today = String(new Date().getDate());
+    //     if(res.data){
+    //         for(let i=0; i<res.data.length; i++){
+    //             if(String(res.data[i].day) == today){
+    //                 $('#data_table_root').append(`
+    //                     <tr id="${res.data[i]._id}">
+    //                         <td class="td_product">
+    //                             <input type="text" 
+    //                                    value="${i+1}" 
+    //                                    class="btn btn-primary"/>
+    //                         </td>
+    //                         <td class="td_product">
+    //                             <input 
+    //                                   value="${res.data[i].email}" class="btn btn-primary"/>
+    //                         </td>
+    //                         <td class="td_product">
+    //                             <input 
+    //                                   value="${res.data[i].count}" class="btn btn-primary"/>
+    //                         </td>
+                            
+    //                     </tr>
+    //             `);
+    //             }else{
+    //                 $('#data_table_root').append(`
+    //                     <tr id="${res.data[i]._id}">
+    //                         <td class="td_product">
+    //                             <input type="text" 
+    //                                    value="${i+1}" 
+    //                                    class="btn btn-primary"/>
+    //                         </td>
+    //                         <td class="td_product">
+    //                             <input 
+    //                                   value="${res.data[i].email}" class="btn btn-primary"/>
+    //                         </td>
+    //                         <td class="td_product">
+    //                             <input 
+    //                                   value="0" class="btn btn-primary"/>
+    //                         </td>
+                            
+    //                     </tr>
+    //             `);
+    //             }
+                
+    //         }
+       
+    //     }
+    // }
+    // TakeData();
+</script>
