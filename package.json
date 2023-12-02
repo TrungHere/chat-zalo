@@ -5,7 +5,7 @@
   "main": "chat365.js",
   "type": "module",
   "scripts": {
-    "start": "node chat365.js",
+    "start": "nodemon chat365.js",
     "dev": "nodemon chat365.js"
   },
   "author": "",

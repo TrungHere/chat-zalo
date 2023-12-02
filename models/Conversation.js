@@ -6,11 +6,12 @@ const ConversationSchema = new mongoose.Schema(
             type: Number,
             required: true,
         },
+        // 0 là cuộc trò chuyện 1 1 
         isGroup: {
             type: Number,
             required: true,
         },
-        typeGroup: {
+        typeGroup: {// Normal / offline / zalo
             type: String,
             required: true,
         },

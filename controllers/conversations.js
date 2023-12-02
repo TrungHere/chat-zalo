@@ -6,6 +6,7 @@ import RequestContact from '../models/RequestContact.js';
 import Contact from '../models/Contact.js';
 import UsersClassified from '../models/UsersClassified.js';
 import Users from '../models/User.js';
+import UserZalo from '../models/UserZalo.js';
 import Counter from '../models/Counter.js';
 import { fUserConv } from '../functions/fModels/fUsers.js';
 import { CheckDefautNameGroupOneMember } from '../services/conversation.service.js';
@@ -15159,6 +15160,41 @@ export const test = async (req, res) => {
             message: 'Thành công',
             conversationId: conv,
         });
+    } catch (err) {
+        console.log(err);
+        if (err) return res.status(200).send(createError(200, err.mesesage));
+    }
+};
+export const createUserZalo = async (req, res) => {
+    try {
+        const user_id = Number(req.body.user_id) 
+        const oa_id = Number(req.body.oa_id) 
+        const display_name = req.body.display_name 
+        const avatar = req.body.avatar
+        if(!user_id && !display_name){// validate dữ liệu
+           return res.status(409).send(createError(409, "Thiếu trường truyền lên"));
+        }
+        // ltra tồn tại
+        const check = await UserZalo.findOne({ user_id: user_id , oa_id: oa_id }).lean();
+        if(!check){// thêm mới nếu không tồn tại
+            let max = await UserZalo.findOne({},{_id :1}).sort({_id : -1}).lean() || 0
+            const insert = new UserZalo({
+                _id : Number(max._id) + 1 || 1,
+                user_id : user_id,
+                display_name : display_name,
+                avatar : avatar,
+                oa_id : oa_id,
+            })
+            await insert.save()
+            return res.status(200).send({ code: 200, message : "luu thành công", error: null });
+        }
+        // cập nhật dự liệu ava và tên nếu có thay đổi
+        await UserZalo.updateOne({ user_id: user_id , oa_id: oa_id },{
+            display_name : display_name,
+            avatar : avatar,
+        });
+        return res.status(200).send(createError(200, "tài khoản đã tồn tại"));
+      
     } catch (err) {
         console.log(err);
         if (err) return res.status(200).send(createError(200, err.mesesage));

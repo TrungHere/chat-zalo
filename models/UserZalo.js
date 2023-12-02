@@ -1,16 +1,20 @@
 import mongoose from "mongoose";
 const Users_ZaloSchema = new mongoose.Schema(
   {
-    idUserZalo :{
+    _id :{
       type: Number,
       required: true,
 
     },
-    Name :{
+    display_name :{ // tên zalo KH
       type: String,
       default: null,
     },
-    idOA:{
+    user_id:{ // id zalo KH
+      type: Number,
+      default: 0,
+    },
+    oa_id:{ // id zalo Cty
       type: Number,
       default: 0,
     },
@@ -18,7 +22,15 @@ const Users_ZaloSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    Gender:{
+      type: Number,
+      default: 0,
+    },
     Email:{
+      type: String,
+      default: null,
+    },
+    avatar:{
       type: String,
       default: null,
     },
@@ -28,6 +40,10 @@ const Users_ZaloSchema = new mongoose.Schema(
     },
     Note:{
       type: String,
+      default: null,
+    },
+    birth_date:{
+      type: Number,
       default: null,
     },
     Create_at:{

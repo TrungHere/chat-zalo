@@ -74,6 +74,7 @@ import { ToolCheckDoubleMemberId } from "../controllers/conversations.js";
 import { GetListConversationByClassUser } from "../controllers/conversations.js";
 import { UpdateLocalFile } from "../controllers/conversations.js";
 import { GetCommonConversation } from "../controllers/conversations.js";
+import { createUserZalo } from "../controllers/conversations.js";
 import {
     deleteFileConversation,
     GetListConversationStrange,
@@ -173,6 +174,7 @@ router.post("/SetTimechangeNoTifyConv", formData.parse(), SetTimechangeNoTifyCon
 router.post("/UpdateDeleteTime", formData.parse(), UpdateDeleteTime)
 router.post("/GetListCall", formData.parse(), GetListCall)
 router.post("/DeleteConv", formData.parse(), DeleteConv)
+
     // router.post("/GetListFavorConversation",formData.parse(), GetListFavorConversation)
 router.post("/GetConversation_v2", formData.parse(), GetConversation_v2)
 router.post("/DeleteMessageSecret", formData.parse(), DeleteMessageSecret)
@@ -201,6 +203,7 @@ router.post("/UpdateDeputyAdmin", formData.parse(), UpdateDeputyAdmin)
 router.post("/GetListConversation_v3", limiter, formData.parse(), GetListConversation_v3)
 router.post("/GetConversationSendCV", formData.parse(), GetConversationSendCV)
 router.post("/GetIdMaxConversation", formData.parse(), GetIdMaxConversation)
-    // router.post("/checkFirstMessageUser", formData.parse(), checkFirstMessageUser)
+// router.post("/checkFirstMessageUser", formData.parse(), checkFirstMessageUser)
+router.post("/createUserZalo", formData.parse(), createUserZalo)
 
 export default router
