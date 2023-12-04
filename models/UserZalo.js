@@ -18,6 +18,10 @@ const Users_ZaloSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    app_id:{ // id app zalo 
+      type: Number,
+      default: 0,
+    },
     Phone:{
       type: Number,
       default: 0,

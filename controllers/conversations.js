@@ -7,6 +7,7 @@ import Contact from '../models/Contact.js';
 import UsersClassified from '../models/UsersClassified.js';
 import Users from '../models/User.js';
 import UserZalo from '../models/UserZalo.js';
+import Token from '../models/TokenZalo.js';
 import Counter from '../models/Counter.js';
 import { fUserConv } from '../functions/fModels/fUsers.js';
 import { CheckDefautNameGroupOneMember } from '../services/conversation.service.js';
@@ -15169,6 +15170,7 @@ export const createUserZalo = async (req, res) => {
     try {
         const user_id = Number(req.body.user_id) 
         const oa_id = Number(req.body.oa_id) 
+        const app_id = Number(req.body.app_id) 
         const display_name = req.body.display_name 
         const avatar = req.body.avatar
         if(!user_id && !display_name){// validate dữ liệu
@@ -15184,6 +15186,7 @@ export const createUserZalo = async (req, res) => {
                 display_name : display_name,
                 avatar : avatar,
                 oa_id : oa_id,
+                app_id : app_id,
             })
             await insert.save()
             return res.status(200).send({ code: 200, message : "luu thành công", error: null });
@@ -15194,6 +15197,170 @@ export const createUserZalo = async (req, res) => {
             avatar : avatar,
         });
         return res.status(200).send(createError(200, "tài khoản đã tồn tại"));
+      
+    } catch (err) {
+        console.log(err);
+        if (err) return res.status(200).send(createError(200, err.mesesage));
+    }
+};
+
+export const saveMessageFromWebhook = async (req, res) => {
+    try {
+        const from_id = req.body.from_id
+        const from_id = req.body.from_id
+            // create conv Offline/050901/Thu Oct 20 2022 14:03:56 GMT+0700 (Indochina Time)
+            let result = await Conversation.findOne({}, { _id: 1 })
+                .sort({ _id: -1 })
+                .lean() || 0
+            if (result && result.length == 1) {
+                let update = await Counter.updateOne({ 
+                    name: 'ConversationID' 
+                }, { 
+                    $set: 
+                    { countID: Number(result._id) + 1 || 1} 
+                });
+                if (update) {
+                    const newConversation = new Conversation({
+                        _id: Number(result._id) + 1 || 1,
+                        isGroup: 0,
+                        typeGroup: `Zalo/${code}/${String(new Date())}`,
+                        avatarConversation: '',
+                        adminId: "",
+                        shareGroupFromLinkOption: 1,
+                        browseMemberOption: 1,
+                        pinMessage: '',
+                        memberList: [],
+                        messageList: [],
+                        browseMemberList: [],
+                    });
+                    const savedConversation = await newConversation.save();
+    
+                    // when catch err => log ; this is method save cost
+                    if (savedConversation) {
+                        let update = await Conversation.findOneAndUpdate({ _id: savedConversation._id }, { $push: { memberList: user } });
+                        if (update) {
+                            // gui tin nhan vao la xong
+                            let sendmes = await axios({
+                                method: 'post',
+                                url: 'http://43.239.223.142:3005/Message/SendMessage',
+                                data: {
+                                    MessageID: '',
+                                    ConversationID: savedConversation._id,
+                                    SenderID: user.memberId,
+                                    MessageType: 'notification',
+                                    Message: `Bạn đã tạo nhóm Zalo`,
+                                    Emotion: 1,
+                                    Quote: '',
+                                    Profile: '',
+                                    ListTag: '',
+                                    File: '',
+                                    ListMember: '',
+                                    IsOnline: [],
+                                    IsGroup: 1,
+                                    ConversationName: '',
+                                    DeleteTime: 0,
+                                    DeleteType: 0,
+                                },
+                                headers: { 'Content-Type': 'multipart/form-data' },
+                            });
+                        }
+                    }
+                }
+            }
+    } catch (err) {
+        console.log(err);
+        if (err) return res.status(200).send(createError(200, err.mesesage));
+    }
+};
+
+
+export const TokenZalo = async (req, res) => {
+    try {
+        const Type = req.body.Type 
+        const oa_id = Number(req.body.oa_id ? req.body.oa_id : 0) 
+        const app_id = Number(req.body.app_id ? req.body.app_id : 0) 
+        const access_token = req.body.access_token 
+        const refresh_token = req.body.refresh_token
+        const name = req.body.name
+
+        if(!Type || oa_id == 0){// validate dữ liệu
+           return res.status(409).send(createError(409, "Thiếu trường truyền lên"));
+        }
+        // thêm dữ liệu vào bảng 
+        if(Type == 0){
+        
+        const check = await Token.findOne({ oa_id: oa_id }).lean();
+        if(!check){
+            let max = await Token.findOne({},{_id :1}).sort({_id : -1}).lean() || 0
+            const insert = new Token({
+                _id : Number(max._id) + 1 || 1,
+                name : name,
+                oa_id : oa_id,
+                app_id : app_id,
+                access_token : access_token,
+                refresh_token : refresh_token,
+            })
+            await insert.save()
+            return res.status(200).send({ code: 200, message : "Tạo thành công", error: null });
+        }
+        return res.status(409).send(createError(409, "Tài khoản OA đã tồn tại"));
+
+
+
+        // lấy token
+        }else if(Type == 1){
+        
+        const getToken = await Token.findOne({ oa_id: oa_id }).lean();
+            if(getToken){
+                return res.status(200).send({ code: 200, message : "Lấy thành công",data : getToken, error: null });
+                }
+            return res.status(409).send(createError(409, "Tài khoản OA không tồn tại"));
+
+
+
+        // cập nhật token
+        }else if(Type == 2){
+
+            await Token.updateOne({ oa_id: oa_id },{
+                access_token : access_token,
+                refresh_token : refresh_token,
+                Update_at : Date.parse(new Date())
+            });
+            return res.status(200).send(createError(200, " Cập nhật thành công"));
+
+        }else if(Type == 3){// thêm thông tin cty trên server
+
+                const saveToken = await axios({
+                    method: 'post',
+                    url: 'http://210.245.108.202:9000/api/conversations/TokenZalo',
+                    data: {
+                      Type:"0",
+                      oa_id:"579745863508352884", // id Cty Hưng Việt
+                      access_token:"6hErRFw5kGuSlhXW_8Yr3XcwlM__bizJ7-6WReUvrqW4-ffvbRJOPYU6rrM7j8ra3Tlv0fMjyXfqmQOIz_gk7N2k_GNNohycCUN0FOcmYYWOXe98YEcBMmI5rsI-zfS1LPB2OCUeedrIpyyOoxt03N-Cko_WpBH1TARZREENkWnaeEHer9E3N4h5z3_FW80hNUVnAkkfXGTDtTPfzxV326E3WplgkTubNlFJ4BkmemCjnzenYBIXCYd0xn2Ncw0f5zVy68cFgW42sTivfksCFLZTu0lRY9afOB_I5kFie1jeYFadwTkl9m-9ypoHkAO65E_E6fBTdJGvffCwskRx27cIgsVY-DXwVik_VFkMx6DQvPzzvQBLGM34gtZMzwLWCh_eOQxodNyieC4SoiM80cFqXcNJ0ZXN_P-_3m",
+                      refresh_token:"lluoBdFqnXwuypyYSVdA7httEYrovurzkh48I3VZ-0I3jqreJENF2_g2MLfdZFTjfDf476_KxNpjkXGrO-2QG-wOEHCbah9yaFP37ZEdw5ETtKiFBwVoMOJ8SnKDl89WkRKp9oMzntEoirKF2jNxPPtO0YrJkRf_mV4gJr61hHtcpLbRPONLFCVLN009fEetWTSU1HAJit2Ftpz2JA-t2u3RG5X2bieMqkH7Ad-q_b_ap0m2SBgRQUdK6YiZs8zFY9T-B3wP-cMjm7ibRi_8JAIrJIeVlVbEZTDSUnQ2hYwFobT18h757BEwDo4_piP6fwXH6clIr6RwX6G9R-3tDQIrQ7CGpTXFcyD1ArUPh4V2uneoOQoPNQptDGS4dRrbYz8GMJEAwJ2-zMP79Oh02pLu-Zx01N3km1y",
+                      app_id:"2474451999345960065",
+                      name:"Cty Hưng Việt"
+                    },
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                });
+                // console.log(saveToken.data.data.data)
+                return res.status(200).send({ code: 200, message : "Lấy thành công",data : saveToken.data.data, error: null });
+        }else if(Type == 4){// lấy thông tin cty trên server
+
+                const saveToken = await axios({
+                    method: 'post',
+                    url: 'http://210.245.108.202:9000/api/conversations/TokenZalo',
+                    data: {
+                      Type:"1",
+                      oa_id:"579745863508352884",
+                    },
+                    headers: { 'Content-Type': 'multipart/form-data' },
+                });
+                return res.status(200).send({ code: 200, message : "Lấy thành công",data : saveToken.data.data, error: null });
+
+        }else{
+            return res.status(409).send(createError(409, "Vui lòng nhập type = 1, 2"));
+        }
       
     } catch (err) {
         console.log(err);

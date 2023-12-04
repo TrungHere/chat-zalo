@@ -287,7 +287,7 @@ const ConversationSchema = new mongoose.Schema(
         ],
         memberApproval: {
             type: Number,
-            default: 1
+            default: 1 // Bật duyệt thành viên , 2,0 không bật  
         },
         createdAt: { type: Date, default: new Date() },
         updatedAt: { type: Date, default: new Date() },
