@@ -14,6 +14,10 @@ const Users_ZaloSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    emp_id:{ // id NV Chăm sóc
+      type: Number,
+      default: 0,
+    },
     oa_id:{ // id zalo Cty
       type: Number,
       default: 0,

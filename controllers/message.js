@@ -4066,6 +4066,7 @@ export const SendMessage = async (req, res) => {
             if (req.body.ContactId) {
                 AddFriend(Number(req.body.SenderID), Number(req.body.ContactId));
             }
+            //gửi tin nhắn
             if (req.body.MessageType && (req.body.File || req.body.Message || req.body.Quote)) {
                 // let finduser = User.findOne({_id:SenderId})
                 let MessageType = String(req.body.MessageType);
