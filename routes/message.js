@@ -69,6 +69,9 @@ import { ShowAllListAdsMessage } from '../controllers/message.js';
 import { GetDetailAdsMessage } from '../controllers/message.js';
 import { DeleteAdsMessage } from '../controllers/message.js';
 import { SendMessageCv_v2 } from '../controllers/message.js';
+import { sendMessageZalo } from '../controllers/message.js';
+import { SharePermissionZalo } from '../controllers/message.js';
+import { LoadMessageZalo } from '../controllers/message.js';
 
 import { uploadImageAds } from '../controllers/file.js';
 const router = express.Router();
@@ -157,4 +160,7 @@ router.post('/ShowAllListAdsMessage', uploadImageAds, ShowAllListAdsMessage);
 router.post('/GetDetailAdsMessage', formData.parse(), GetDetailAdsMessage);
 router.post('/DeleteAdsMessage', formData.parse(), DeleteAdsMessage);
 router.post('/SendMessageCv_v2', formData.parse(), SendMessageCv_v2);
+router.post('/sendMessageZalo', formData.parse(), sendMessageZalo);
+router.post('/SharePermission', formData.parse(), SharePermissionZalo);
+router.post('/LoadMessageZalo', formData.parse(), LoadMessageZalo);
 export default router;

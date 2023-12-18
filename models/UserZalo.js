@@ -6,11 +6,15 @@ const Users_ZaloSchema = new mongoose.Schema(
       required: true,
 
     },
-    display_name :{ // tên zalo KH
+    userName :{ // tên zalo KH
       type: String,
       default: null,
     },
     user_id:{ // id zalo KH
+      type: String,
+      default: 0,
+    },
+    userID365:{ // id mã hóa zalo KH , sử dụng để truy vấn trong chat365
       type: Number,
       default: 0,
     },
@@ -19,11 +23,11 @@ const Users_ZaloSchema = new mongoose.Schema(
       default: 0,
     },
     oa_id:{ // id zalo Cty
-      type: Number,
+      type: String,
       default: 0,
     },
     app_id:{ // id app zalo 
-      type: Number,
+      type: String,
       default: 0,
     },
     Phone:{

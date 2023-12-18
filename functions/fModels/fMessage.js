@@ -1,3 +1,8 @@
+// tạo token
+import jwt from 'jsonwebtoken';
+// tạo biến môi trường
+import dotenv from 'dotenv' ;
+dotenv.config();
 export const Messages = (messageID,conversationID,senderID,messageType,message,listTag,deleteDate,deleteTime,deleteType,isFavorite) =>{
     return {
         MessageID : messageID,
@@ -118,3 +123,62 @@ export const LiveChatDB = ( clientId,clientName,fromWeb,FromConversation)=>{
       FromConversation: FromConversation || 0
     }
   }
+
+  export const checkTokenZalo = async (req, res, next) => {
+    if (req.headers.authorization) {
+      const authHeader = req.headers['authorization'];
+      const token = authHeader && authHeader.split(' ')[1];
+      if (!token) {
+        return res.status(401).json({ message: 'Missing token' });
+      }
+      jwt.verify(token, process.env.NODE_SERCET, (err, user) => {
+        if (err) {
+          return res.status(403).json({ message: 'Invalid token' });
+        }
+        req.user = user;
+        next();
+    });
+    } else {
+      next();
+    }
+  };
+
+  // hàm check token
+  export const checkTokenV1 = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  if (!token) {
+      return res.status(401).json({ message: 'Missing token' });
+  }
+  jwt.verify(token, process.env.NODE_SERCET, (err, user) => {
+      if (err) {
+          return res.status(403).json({ message: 'Invalid token' });
+      }
+      req.user = user;
+      // console.log(user)
+      next();
+  });
+};
+
+
+export const getTokenUser = async (req, res) => {
+  try {
+	let user = null;
+
+	if (req.headers.authorization) {
+		const authHeader = req.headers['authorization'];
+		const token = authHeader && authHeader.split(' ')[1];
+		if (token) {
+			jwt.verify(token, process.env.NODE_SERCET, (err, result) => {
+				if (!err) {
+					user = result.data;
+				}
+			});
+		}
+	}
+	return user;
+} catch (err) {
+  console.log(err);
+  return res.status(200).json(createError(200, 'Đã có lỗi xảy ra'));
+}
+};

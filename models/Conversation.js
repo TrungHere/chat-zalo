@@ -61,9 +61,9 @@ const ConversationSchema = new mongoose.Schema(
                     type: String,
                     default: ""
                 },
-                unReader: {
+                unReader: { // 0 : chua doc , 1 doc roi 
                     type: Number,
-                    default: 0,
+                    default: 0, 
                 },
                 messageDisplay: {
                     type: Number,

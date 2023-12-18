@@ -76,6 +76,10 @@ import { UpdateLocalFile } from "../controllers/conversations.js";
 import { GetCommonConversation } from "../controllers/conversations.js";
 import { createUserZalo } from "../controllers/conversations.js";
 import { TokenZalo } from "../controllers/conversations.js";
+import { saveConversationZalo } from "../controllers/conversations.js";
+import { checkUserZalo } from "../controllers/conversations.js";
+// import { sendMessageZalo } from "../controllers/conversations.js";
+import { GetConversation_zalo } from "../controllers/conversations.js";
 import {
     deleteFileConversation,
     GetListConversationStrange,
@@ -207,5 +211,9 @@ router.post("/GetIdMaxConversation", formData.parse(), GetIdMaxConversation)
 // router.post("/checkFirstMessageUser", formData.parse(), checkFirstMessageUser)
 router.post("/createUserZalo", formData.parse(), createUserZalo)
 router.post("/TokenZalo", formData.parse(), TokenZalo)
+router.post("/saveConversationZalo", formData.parse(), saveConversationZalo)
+// router.post("/sendMessageZalo", formData.parse(), sendMessageZalo)
+router.post("/GetConversation_zalo", formData.parse(), GetConversation_zalo)
+router.post("/checkUserZalo", formData.parse(), checkUserZalo)
 
 export default router

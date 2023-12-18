@@ -10,13 +10,33 @@ const Token_ZaloSchema = new mongoose.Schema(
       default: null,
     },
     oa_id:{ // id zalo Cty
-      type: Number,
+      type: String,
       default: 0,
     },
     app_id:{ // id app zalo 
-      type: Number,
+      type: String,
       default: 0,
     },
+    com_id: { //id công ty
+      type: Number,
+      default: 0
+    },
+    currentIndex: { //Phục vụ phân chia list nhân viên được phân quyền 
+      type: Number,
+      default: 0
+    },
+    idQLC: { //danh sách id nhân viên được phân quyền
+      type: [Number],
+      default:[],
+    },
+    secret_key :{ // 
+        type: String,
+        default: null,
+      },
+    secret_key_OA :{ // 
+        type: String,
+        default: null,
+      },
     access_token :{ // 
         type: String,
         default: null,
